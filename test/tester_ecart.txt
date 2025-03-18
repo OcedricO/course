@@ -1,0 +1,45 @@
+import sqlite3
+from analyse import (
+    calculer_ecarts_numeros,
+    calculer_ecarts_combinaisons
+)
+
+# Chemin vers votre base de données
+db_path = 'courses.db'
+
+# Connexion à la base de données
+conn = sqlite3.connect(db_path)
+cur = conn.cursor()
+
+# Récupérer toutes les courses triées par date
+cur.execute("SELECT * FROM courses ORDER BY date_course ASC")
+rows = cur.fetchall()
+
+# Convertir les lignes en une liste de dictionnaires
+courses = []
+for row in rows:
+    course = {
+        'date_course': row[1],  # date_course
+        'lieu': row[2],         # lieu
+        'type_course': row[3],  # type_course
+        'distance': row[4],     # distance
+        'arrivee': row[5],      # arrivee
+        'synthese': row[6],     # synthese
+        'nom_fichier': row[7]   # nom_fichier
+    }
+    courses.append(course)
+
+# Calculer les écarts pour chaque numéro
+ecarts_numeros = calculer_ecarts_numeros(courses)
+print("=== Écarts pour chaque numéro ===")
+for num, data in ecarts_numeros.items():
+    print(f"Numéro {num} : Écart actuel = {data['ecart_actuel']}, Écart max = {data['ecart_max']}")
+
+# Calculer les écarts pour chaque couple de numéros
+ecarts_couples = calculer_ecarts_combinaisons(courses, taille_combinaison=2)
+print("\n=== Écarts pour chaque couple de numéros ===")
+for couple, data in ecarts_couples.items():
+    print(f"Couple {couple} : Écart actuel = {data['ecart_actuel']}, Écart max = {data['ecart_max']}")
+
+# Fermer la connexion
+conn.close()
