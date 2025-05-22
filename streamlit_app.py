@@ -31,13 +31,16 @@ if menu_option == "Accueil":
     # Afficher les dernières courses
     st.subheader("Dernières courses enregistrées")
     try:
-        courses = db.get_courses(limit=5)
+        courses = db.get_courses()
         if courses:
-            st.dataframe(pd.DataFrame(courses))
+            # Convertir en DataFrame et afficher uniquement les 5 premières entrées
+            df_courses = pd.DataFrame(courses)
+            st.dataframe(df_courses.head(5))
         else:
             st.warning("Aucune course trouvée dans la base de données.")
     except Exception as e:
         st.error(f"Erreur lors de la récupération des données : {e}")
+        st.error("Assurez-vous que la base de données est correctement initialisée et contient des données.")
 
 elif menu_option == "Analyser un numéro":
     st.header("Analyse d'un numéro")
